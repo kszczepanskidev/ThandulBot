@@ -1,5 +1,3 @@
-
-
 from ..environment import bot_environment
 from .helpers import remove_command_message, check_author_permission
 from .check_dates_command import check_dates_command

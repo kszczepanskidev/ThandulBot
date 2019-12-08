@@ -1,4 +1,5 @@
 from re import search
+import logging
 
 from ..environment import bot_environment
 from .helpers import get_role_mention
@@ -8,30 +9,30 @@ from .helpers import get_role_mention
 # Sends mention for user that didn't reacted yet.
 # Sends summary if everyone voted, with selected or none dated.
 async def check_dates_command(ctx):
-    
+
     # Check if config file have role mention for current server.
     try:
         role_mention_id = get_role_mention(ctx)
     except:
         return
-    
+
     # Get last message with dates based on containing rich embed.
     messages = await ctx.message.channel.history(limit=200).flatten()
     bot_messages = [msg for msg in messages if str(msg.author.id) == bot_environment.bot_id]
     last_dates_message = next(msg for msg in bot_messages if len([embed for embed in msg.embeds if embed.type == 'rich']) > 0)
-    
+
     # Get ids of mentinable users for given server from config file and cross-check it with ids of all users on the server.
     # Exits if there is no matching users or config file doesn't include id of current server.
     guild_member_ids = [member.id for member in ctx.guild.members]
     try:
         mentionable_members = [member_id for member_id in bot_environment.user_ids[ctx.guild.id] if member_id in guild_member_ids]
         if len(mentionable_members) == 0:
-            print('No mentionable users.')
+            logging.error('No mentionable users.')
             return
     except:
-        print('No server id in config file.')
+        logging.error('No server id in config file.')
         return
-    
+
     # Get ids of users that gave any reaction under last dates message.
     last_dates_message_reactions = [await reaction.users().flatten() for reaction in last_dates_message.reactions]
     users_that_reacted = set([str(user.id) for users in last_dates_message_reactions for user in users if str(user.id) != bot_environment.bot_id])

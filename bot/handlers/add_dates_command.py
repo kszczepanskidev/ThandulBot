@@ -1,5 +1,7 @@
 from re import findall
 from discord import Embed, Emoji, utils
+from itertools import zip_longest
+from math import floor
 import logging
 
 from ..environment import bot_environment, emotes
@@ -20,11 +22,15 @@ async def add_dates_command(ctx, dates):
         logging.error('add_dates_command: Too many dates found')
         return
 
+    if len(dates) > 5:
+        middle_point = floor(len(dates) / 2) + 1
+        split_dates = zip_longest(dates[:middle_point], dates[middle_point:])
+
     # Create Rich Embed with given dates.
     embed = Embed(
         title='Terminy na kolejny tydzień. Oznaczcie które dni wam pasują:',
         type='rich',
-        description='\n\n'.join(['{}    {}'.format(emotes[it], date[:-1]) for (it, date) in enumerate(dates)]),
+        description= '\n\n'.join([('{}{}{}' if date2 is None else '{}{}{}{}{}{}{}').format(emotes[it], u'\u00A0'*4, str(date1)[:-1], u'\u00A0'*12, emotes[it + middle_point], u'\u00A0'*4, str(date2)[:-1]) for (it, (date1, date2)) in enumerate(split_dates)]),
     )
 
     # Check if config file have role mention for current server.

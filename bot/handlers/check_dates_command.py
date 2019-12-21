@@ -8,24 +8,24 @@ from .helpers import get_role_mention
 # Extracts unique users that selected any date.
 # Sends mention for user that didn't reacted yet.
 # Sends summary if everyone voted, with selected or none dated.
-async def check_dates_command(ctx):
+async def check_dates_command(context):
 
     # Check if config file have role mention for current server.
     try:
-        role_mention_id = get_role_mention(ctx)
+        role_mention_id = get_role_mention(context)
     except:
         return
 
     # Get last message with dates based on containing rich embed.
-    messages = await ctx.message.channel.history(limit=200).flatten()
+    messages = await context.message.channel.history(limit=200).flatten()
     bot_messages = [msg for msg in messages if str(msg.author.id) == bot_environment.bot_id]
     last_dates_message = next(msg for msg in bot_messages if len([embed for embed in msg.embeds if embed.type == 'rich']) > 0)
 
     # Get ids of mentinable users for given server from config file and cross-check it with ids of all users on the server.
     # Exits if there is no matching users or config file doesn't include id of current server.
-    guild_member_ids = [member.id for member in ctx.guild.members]
+    guild_member_ids = [member.id for member in context.guild.members]
     try:
-        mentionable_members = [member_id for member_id in bot_environment.user_ids[ctx.guild.id] if member_id in guild_member_ids]
+        mentionable_members = [member_id for member_id in bot_environment.user_ids[context.guild.id] if member_id in guild_member_ids]
         if len(mentionable_members) == 0:
             logging.error('No mentionable users.')
             return
@@ -40,7 +40,7 @@ async def check_dates_command(ctx):
     # Check if there are users that didn't reacted to mention them in a message asking to vote.
     users_to_mention = [user for user in mentionable_members if str(user) not in users_that_reacted]
     if len(users_to_mention) > 0:
-        await ctx.send(' '.join(['<@{}>'.format(user_id) for user_id in users_to_mention]) + ' proszę o określenie się co do zaproponowanych terminów.')
+        await context.send(' '.join(['<@{}>'.format(user_id) for user_id in users_to_mention]) + ' proszę o określenie się co do zaproponowanych terminów.')
         return
 
     # If all given in bot setup users voted, check for selected dates by them.
@@ -53,4 +53,4 @@ async def check_dates_command(ctx):
         message += 'pasujące terminy: {}'.format(', '.join(dates_selected_by_all))
     else:
         message += 'brak pasujących terminów :('
-    await ctx.send(message)
+    await context.send(message)

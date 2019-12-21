@@ -9,7 +9,7 @@ from .helpers import get_role_mention
 
 # Sends message with rich embed with dates given in command message
 # assigning emote to each and reactions for voting under sent message.
-async def add_dates_command(ctx, dates):
+async def add_dates_command(context, dates):
 
     # Extract dates from command parameter.
     dates = findall(r'(\d{1,2}\.\d{1,2};{1})', dates + ';')
@@ -35,12 +35,12 @@ async def add_dates_command(ctx, dates):
 
     # Check if config file have role mention for current server.
     try:
-        role_mention_id = get_role_mention(ctx)
+        role_mention_id = get_role_mention(context)
     except:
         return
 
     # Send message with proper mention and rich embed.
-    dates_msg = await ctx.send('<@&{}>'.format(role_mention_id), embed=embed)
+    dates_msg = await context.send('<@&{}>'.format(role_mention_id), embed=embed)
 
     # Add reactions for voting.
     for i in range(0, len(dates)):

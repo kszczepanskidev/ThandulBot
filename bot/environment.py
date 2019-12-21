@@ -8,7 +8,6 @@ Environment = namedtuple(
     'Environment',
     [
         'token',
-        'guild',
         'channels',
         'command_symbol',
         'mention_role_ids',
@@ -20,8 +19,7 @@ Environment = namedtuple(
 
 bot_environment = Environment(
     getenv('DISCORD_TOKEN'),
-    getenv('DISCORD_GUILD'),
-    str(getenv('DISCORD_RPG_CHANNELS')).split(';'),
+    literal_eval(getenv('DISCORD_RPG_CHANNELS')),
     '!',
     literal_eval(getenv('DISCORD_ROLE_IDS')),
     getenv('DISCORD_ADMIN_ID'),

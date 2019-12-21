@@ -45,7 +45,7 @@ async def check_dates_command(ctx):
 
     # If all given in bot setup users voted, check for selected dates by them.
     reactions_with_full_votes = [reaction.emoji for reaction in last_dates_message.reactions if set(mentionable_members).issubset([user.id for user in await reaction.users().flatten()])]
-    dates_selected_by_all = [search(r'(\d{1,2}\.\d{1,2})', date).group(1) for date in last_dates_message.embeds[0].description.split('\n\n') for reaction in reactions_with_full_votes if reaction in date]
+    dates_selected_by_all = [search(reaction + u'\u00A0'*4 + r'(\d{1,2}\.\d{1,2})', date).group(1) for date in last_dates_message.embeds[0].description.split('\n\n') for reaction in reactions_with_full_votes if reaction in date]
 
     # Sends message with selected dates or information that no date was selected by everyone.
     message = '<@&{}> Wszyscy zagłosowali, '.format(role_mention_id)

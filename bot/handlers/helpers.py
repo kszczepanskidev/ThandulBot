@@ -24,7 +24,7 @@ def check_channel_name(guild_id, channel_name):
 # Get role mention that is present on server that command was issued at.
 def get_role_mention(context):
     try:
-        mentionable_role = bot_environment.mention_role_ids[context.guild.id]
+        mentionable_role = bot_environment.mention_role_ids[context.guild.id][context.channel.name]
         if mentionable_role in [role.id for role in context.guild.roles]:
             return mentionable_role
     except:

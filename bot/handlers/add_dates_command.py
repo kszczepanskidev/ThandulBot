@@ -1,7 +1,7 @@
 from re import findall
 from discord import Embed, Emoji, utils
 from itertools import zip_longest
-from math import floor
+from math import ceil
 import logging
 
 from ..environment import bot_environment, emotes
@@ -23,7 +23,7 @@ async def add_dates_command(context, dates):
         return
 
     if len(dates) > 5:
-        middle_point = floor(len(dates) / 2) + 1
+        middle_point = ceil(len(dates) / 2)
         split_dates = zip_longest(dates[:middle_point], dates[middle_point:])
 
     # Create Rich Embed with given dates.

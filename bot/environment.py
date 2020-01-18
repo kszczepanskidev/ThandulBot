@@ -7,10 +7,12 @@ load_dotenv()
 Environment = namedtuple(
     'Environment',
     [
-        'token',
-        'channels',
         'command_symbol',
+        'token',
+        'command_channels',
         'mention_role_ids',
+        'weather_token',
+        'admin_commands',
         'admin_id',
         'bot_id',
         'user_ids',
@@ -18,11 +20,13 @@ Environment = namedtuple(
 )
 
 bot_environment = Environment(
-    getenv('DISCORD_TOKEN'),
-    literal_eval(getenv('DISCORD_RPG_CHANNELS')),
     '!',
-    literal_eval(getenv('DISCORD_ROLE_IDS')),
-    getenv('DISCORD_ADMIN_ID'),
+    getenv('DISCORD_TOKEN'),
+    literal_eval(getenv('COMMAND_CHANNELS')),
+    literal_eval(getenv('ROLE_IDS')),
+    getenv('WEATHER_TOKEN'),
+    getenv('ADMIN_COMMANDS'),
+    getenv('ADMIN_ID'),
     getenv('BOT_ID'),
     literal_eval(getenv('USER_IDS')),
 )

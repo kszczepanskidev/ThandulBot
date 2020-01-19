@@ -25,6 +25,9 @@ async def add_dates_command(context, dates):
     if len(dates) > 5:
         middle_point = ceil(len(dates) / 2)
         split_dates = zip_longest(dates[:middle_point], dates[middle_point:])
+    else:
+        middle_point = len(dates)
+        split_dates = zip_longest(dates,[])
 
     # Create Rich Embed with given dates.
     embed = Embed(

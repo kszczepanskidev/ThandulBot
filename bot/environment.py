@@ -1,4 +1,4 @@
-from os import getenv
+from os import getenv, environ
 from ast import literal_eval
 from dotenv import load_dotenv
 from collections import namedtuple
@@ -19,16 +19,28 @@ Environment = namedtuple(
     ]
 )
 
+# bot_environment = Environment(
+#     '!',
+#     getenv('DISCORD_TOKEN'),
+#     literal_eval(getenv('COMMAND_CHANNELS')),
+#     literal_eval(getenv('ROLE_IDS')),
+#     getenv('WEATHER_TOKEN'),
+#     getenv('ADMIN_COMMANDS'),
+#     getenv('ADMIN_ID'),
+#     getenv('BOT_ID'),
+#     literal_eval(getenv('USER_IDS')),
+# )
+
 bot_environment = Environment(
     '!',
-    getenv('DISCORD_TOKEN'),
-    literal_eval(getenv('COMMAND_CHANNELS')),
-    literal_eval(getenv('ROLE_IDS')),
-    getenv('WEATHER_TOKEN'),
-    getenv('ADMIN_COMMANDS'),
-    getenv('ADMIN_ID'),
-    getenv('BOT_ID'),
-    literal_eval(getenv('USER_IDS')),
+    environ.get('DISCORD_TOKEN', getenv('DISCORD_TOKEN')),
+    literal_eval(environ.get('COMMAND_CHANNELS', getenv('COMMAND_CHANNELS'))),
+    literal_eval(environ.get('ROLE_IDS', getenv('ROLE_IDS'))),
+    environ.get('WEATHER_TOKEN', getenv('WEATHER_TOKEN')),
+    environ.get('ADMIN_COMMANDS', getenv('ADMIN_COMMANDS')),
+    environ.get('ADMIN_ID', getenv('ADMIN_ID')),
+    environ.get('BOT_ID', getenv('BOT_ID')),
+    literal_eval(environ.get('USER_IDS', getenv('USER_IDS'))),
 )
 
 emotes = ['🇦', '🇧', '🇨', '🇩', '🇪', '🇫', '🇬', '🇭', '🇮', '🇯', '🇰', '🇱', '🇲', '🇳', '🇴', ]

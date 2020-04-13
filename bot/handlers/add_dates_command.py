@@ -27,7 +27,7 @@ async def add_dates_command(context, dates):
     embed = Embed(
         title='Terminy na kolejny tydzień. Oznaczcie które dni wam pasują:',
         type='rich',
-        description= '\n\n'.join(['{}{}{}'.format(emotes[it], u'\u00A0'*4, str(datetime.strptime(date, '%d.%m;').replace(year=datetime.now().year).strftime('%d.%m %A'))) for (it, date) in enumerate(dates)]),
+        description= '\n\n'.join(['{}{}{}'.format(emotes[it], u'\u00A0'*4, str(datetime.strptime(date, '%d.%m;').replace(year=datetime.now().year).strftime('%d.%m, %A'))) for (it, date) in enumerate(dates)]),
     )
 
     # Check if config file have role mention for current server.
@@ -37,7 +37,7 @@ async def add_dates_command(context, dates):
         return
 
     # Send message with proper mention and rich embed.
-    dates_msg = await context.send('<@&{}>'.format(role_mention_id), embed=embed)
+    dates_msg = await context.send(f'<@&{role_mention_id}>', embed=embed)
 
     # Add reactions for voting.
     for i in range(0, len(dates)):

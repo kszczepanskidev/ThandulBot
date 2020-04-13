@@ -1,4 +1,5 @@
 from .system_events import *
+from .reactions import handle_reaction_event
 
 def bindEvents(bot):
 
@@ -11,3 +12,13 @@ def bindEvents(bot):
     @bot.event
     async def on_error(event, *args, **kwargs):
         handle_on_error(event, args, kwargs)
+
+    # Message reaction added.
+    @bot.event
+    async def on_raw_reaction_add(event):
+        await handle_reaction_event(bot, event)
+
+    # Message reaction removed.
+    @bot.event
+    async def on_raw_reaction_remove(event):
+        await handle_reaction_event(bot, event)

@@ -16,20 +16,9 @@ Environment = namedtuple(
         'admin_id',
         'bot_id',
         'user_ids',
+        'locale',
     ]
 )
-
-# bot_environment = Environment(
-#     '!',
-#     getenv('DISCORD_TOKEN'),
-#     literal_eval(getenv('COMMAND_CHANNELS')),
-#     literal_eval(getenv('ROLE_IDS')),
-#     getenv('WEATHER_TOKEN'),
-#     getenv('ADMIN_COMMANDS'),
-#     getenv('ADMIN_ID'),
-#     getenv('BOT_ID'),
-#     literal_eval(getenv('USER_IDS')),
-# )
 
 bot_environment = Environment(
     '!',
@@ -41,6 +30,7 @@ bot_environment = Environment(
     environ.get('ADMIN_ID', getenv('ADMIN_ID')),
     environ.get('BOT_ID', getenv('BOT_ID')),
     literal_eval(environ.get('USER_IDS', getenv('USER_IDS'))),
+    environ.get('LOCALE', getenv('LOCALE')),
 )
 
 emotes = ['🇦', '🇧', '🇨', '🇩', '🇪', '🇫', '🇬', '🇭', '🇮', '🇯', '🇰', '🇱', '🇲', '🇳', '🇴', ]

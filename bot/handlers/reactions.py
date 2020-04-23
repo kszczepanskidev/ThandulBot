@@ -19,6 +19,10 @@ async def handle_reaction_event(bot, event):
         logging.info('handle_reaction_event: Not a message from bot')
         return
 
+    if event.emoji.name not in emotes:
+        logging.info('handle_reaction_event: Not supported emoji')
+        return
+
     # Get text with dates split into lines.
     embed = message.embeds[0]
     description = embed.description

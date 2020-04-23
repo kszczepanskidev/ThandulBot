@@ -42,3 +42,6 @@ async def add_dates_command(context, dates):
     # Add reactions for voting.
     for i in range(0, len(dates)):
         await dates_msg.add_reaction(emotes[i])
+
+    # Add `X` reaction for signaling no date chosen.
+    await dates_msg.add_reaction('❌')

@@ -3,6 +3,7 @@ from .helpers import remove_command_message, should_perform_command
 from .check_dates_command import check_dates_command
 from .add_dates_command import add_dates_command
 from .weather_command import weather_command
+from .animals_commands import postAnimal, postRandomAnimal,  postAnimalPhoto
 
 def bindCommands(bot):
 
@@ -37,6 +38,29 @@ def bindCommands(bot):
         city = ' '.join(args)
         await weather_command(context, city)
 
+    @bot.command(name='cat')
+    async def cat(context, *args):
+        await postAnimal(context, 'cat')
+
+    @bot.command(name='dog')
+    async def dog(context, *args):
+        await postAnimal(context, 'dog')
+
+    @bot.command(name='fox')
+    async def fox(context, *args):
+        await postAnimal(context, 'fox')
+
+    @bot.command(name='duck')
+    async def fox(context, *args):
+        await postAnimal(context, 'duck')
+
+    @bot.command(name='goat')
+    async def fox(context, *args):
+        await postAnimal(context, 'goat')
+
+    @bot.command(name='animal')
+    async def fox(context, *args):
+        await postRandomAnimal(context)
 
     # Used for testing various stuff before implementing them on actual command.
     @bot.command(name='test')

@@ -3,7 +3,7 @@ from requests import get
 from datetime import date, datetime
 from discord import Embed
 
-from ..environment import bot_environment
+from ...environment import bot_environment
 
 async def weather_command(context, city):
     weather_json = get('http://api.openweathermap.org/data/2.5/weather?q={}&APPID={}&units=metric&lang=pl'.format(city, bot_environment.weather_token)).json()

@@ -22,7 +22,10 @@ def check_author_permission(command, channel_id, author_id):
 
 # Checks if user issued command in correct channel from config file.
 def check_channel_id(command, channel_id):
-    return channel_id in bot_environment.command_channels[command]
+    if command in bot_environment.command_channels.keys():
+        return channel_id in bot_environment.command_channels[command]
+    else:
+        return True
 
 # Get role mention that is present on server that command was issued at.
 def get_role_mention(context):

@@ -26,7 +26,7 @@ async def handle_reaction_event(bot, event):
     # Get text with dates split into lines.
     embed = message.embeds[0]
     description = embed.description
-    lines = [line for line in description.split('\n') if line != '']
+    lines = [line.replace('**', '') for line in description.split('\n') if line != '']
 
     # Update all lines to avoid async errors.
     for (it, line) in enumerate(lines):
@@ -35,7 +35,8 @@ async def handle_reaction_event(bot, event):
         reactions =  message.reactions
         reaction = [reaction for reaction in reactions if str(reaction) == str(emoji)][0]
         users = await reaction.users().flatten()
-        usernames = [user.name for user in users if user.id != bot.user.id]
+        voting_users = [user for user in users if user.id != bot.user.id]
+        usernames = [user.name for user in voting_users]
 
         # Edit line with edited reaction.
         line = line.split('[')[0]
@@ -43,6 +44,11 @@ async def handle_reaction_event(bot, event):
             if line[-1] != ' ':
                 line += ' '
             line += f"[{', '.join(usernames)}]"
+
+        # Make text bold when all users voted.
+        if all(id in [user.id for user in voting_users] for id in bot_environment.user_ids[event.guild_id]):
+            line = '**' + line + '**'
+
         lines[it] = line
 
     # Update message with edited embed.

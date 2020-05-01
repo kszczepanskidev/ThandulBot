@@ -1,4 +1,3 @@
-import logging
 from requests import get
 from datetime import date, datetime
 from discord import Embed

@@ -5,11 +5,13 @@ from .helpers import remove_command_message, should_perform_command
 from .command_handlers.check_dates_command import check_dates_command
 from .command_handlers.add_dates_command import add_dates_command
 from .command_handlers.weather_command import weather_command
-from .command_handlers.animals_commands import postAnimal, postRandomAnimal,  postAnimalPhoto
+from .command_handlers.animals_commands import post_animal_command, post_random_animal_command
 from .command_handlers.help_command import send_help_command
+from.command_handlers.message_command import send_message_command
 
 # Register commands categories.
 def bindCommands(bot):
+    bot.add_cog(AdminCommands())
     bot.add_cog(RPGCommands())
     bot.add_cog(Information())
     bot.add_cog(AnimalRandomPhotos())
@@ -58,6 +60,29 @@ class RPGCommands(commands.Cog):
 
         await check_dates_command(context)
 
+class AdminCommands(commands.Cog):
+    """
+    Commands that perform some advanced steps.
+
+    Usable only in channels specified in environment configuration.
+    """
+
+    @commands.command(name='message')
+    async def message(self, context, *args):
+        """
+        Sends message to a channel.
+
+        Parameters:
+            - channel: id of channel to which message should be sent.
+            - text: text of message to send. For mentions use <@&role_id> or <@user_id>. For emoji use <:emoji_name:emoji_id>
+
+        Usable only in channels specified in environment configuration.
+        """
+        if not should_perform_command(context):
+            return
+
+        await send_message_command(context, args)
+
 class Information(commands.Cog):
     """
     Commands that post information fetched from external API.
@@ -98,39 +123,39 @@ class AnimalRandomPhotos(commands.Cog):
         """
         Posts random photo of a cat.
         """
-        await postAnimal(context, 'cat')
+        await post_animal_command(context, 'cat')
 
     @commands.command(name='dog')
     async def dog(self, context):
         """
         Posts random photo of a dog.
         """
-        await postAnimal(context, 'dog')
+        await post_animal_command(context, 'dog')
 
     @commands.command(name='fox')
     async def fox(self, context):
         """
         Posts random photo of a fox.
         """
-        await postAnimal(context, 'fox')
+        await post_animal_command(context, 'fox')
 
     @commands.command(name='duck')
     async def fox(self, context):
         """
         Posts random photo of a duck..
         """
-        await postAnimal(context, 'duck')
+        await post_animal_command(context, 'duck')
 
     @commands.command(name='goat')
     async def fox(self, context):
         """
         Posts random photo of a goat.
         """
-        await postAnimal(context, 'goat')
+        await post_animal_command(context, 'goat')
 
     @commands.command(name='animal')
     async def fox(self, context):
         """
         Posts random photo of an random animal.
         """
-        await postRandomAnimal(context)
+        await post_random_animal_command(context)

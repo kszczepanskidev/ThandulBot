@@ -7,7 +7,8 @@ from .command_handlers.add_dates_command import add_dates_command
 from .command_handlers.weather_command import weather_command
 from .command_handlers.animals_commands import post_animal_command, post_random_animal_command
 from .command_handlers.help_command import send_help_command
-from.command_handlers.message_command import send_message_command
+from .command_handlers.message_command import send_message_command
+from .command_handlers.voice_commands import join_command, play_audio_command, volume_command, loop_command, stop_command, disconnect_command
 
 # Register commands categories.
 def bindCommands(bot):
@@ -15,6 +16,30 @@ def bindCommands(bot):
     bot.add_cog(RPGCommands())
     bot.add_cog(Information())
     bot.add_cog(AnimalRandomPhotos())
+    bot.add_cog(Music())
+
+class AdminCommands(commands.Cog):
+    """
+    Commands that perform some advanced steps.
+
+    Usable only in channels specified in environment configuration.
+    """
+
+    @commands.command(name='message')
+    async def message(self, context, *args):
+        """
+        Sends message to a channel.
+
+        Parameters:
+            - channel: id of channel to which message should be sent.
+            - text: text of message to send. For mentions use <@&role_id> or <@user_id>. For emoji use <:emoji_name:emoji_id>
+
+        Usable only in channels specified in environment configuration.
+        """
+        if not should_perform_command(context):
+            return
+
+        await send_message_command(context, args)
 
 class RPGCommands(commands.Cog):
     """
@@ -60,28 +85,105 @@ class RPGCommands(commands.Cog):
 
         await check_dates_command(context)
 
-class AdminCommands(commands.Cog):
+class MusicCommands(commands.Cog):
     """
-    Commands that perform some advanced steps.
+    Commands used to play music into voice channel.
 
-    Usable only in channels specified in environment configuration.
+    Usable only by users specified in environment configuration.
     """
 
-    @commands.command(name='message')
-    async def message(self, context, *args):
+    @commands.command(name='join')
+    async def join(self, context):
         """
-        Sends message to a channel.
-
-        Parameters:
-            - channel: id of channel to which message should be sent.
-            - text: text of message to send. For mentions use <@&role_id> or <@user_id>. For emoji use <:emoji_name:emoji_id>
-
-        Usable only in channels specified in environment configuration.
+        Joins a voice channel of user that invoked the command.
+        
+        Usable only by users specified in environment configuration.
         """
         if not should_perform_command(context):
             return
 
-        await send_message_command(context, args)
+        await join_command(context)
+
+    @commands.command(name='yt')
+    async def yt(self, context, url):
+        """
+        Plays predownloaded audio from provided URL.
+
+        Parameters:
+            - url: url to predownload and play audio from. URL must be supported by youtube_dl.
+        
+        Usable only by users specified in environment configuration.
+        """
+        if not should_perform_command(context):
+            return
+
+        await play_audio_command(context, url, shouldStream=False)
+
+    @commands.command(name='stream')
+    async def stream(self, context, url):
+        """
+        Streams audio from provided URL.
+
+        Parameters:
+            - url: url to stream audio from. URL must be supported by youtube_dl.
+        
+        Usable only by users specified in environment configuration.
+        """
+        if not should_perform_command(context):
+            return
+
+        await play_audio_command(context, url, shouldStream=True)
+
+    @commands.command(name='volume')
+    async def volume(self, context, volume):
+        """
+        Sets audio volume to given % value.
+
+        Parameters:
+            - volume: percent value to set player's volume to.
+        
+        Usable only by users specified in environment configuration.
+        """
+        if not should_perform_command(context):
+            return
+
+        await volume_command(context, volume)
+
+    @commands.command(name='loop')
+    async def loop(self, context):
+        """
+        Toggles loop option for audio player.
+        
+        Usable only by users specified in environment configuration.
+        """
+        if not should_perform_command(context):
+            return
+
+        await loop_command(context)
+
+    @commands.command(name='stop')
+    async def stop(self, context):
+        """
+        Stops sending audio to the voice channel.
+        
+        Usable only by users specified in environment configuration.
+        """
+        if not should_perform_command(context):
+            return
+
+        await stop_command(context)
+
+    @commands.command(name='disconnect')
+    async def disconnect(self, context):
+        """
+        Stops audio and disconnects from voice channel
+        
+        Usable only by users specified in environment configuration.
+        """
+        if not should_perform_command(context):
+            return
+
+        await disconnect_command(context)
 
 class Information(commands.Cog):
     """

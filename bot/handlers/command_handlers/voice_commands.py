@@ -19,21 +19,20 @@ async def play_audio_command(context, url, shouldStream: bool):
         player = await YTDLSource.from_url(url, loop=context.bot.loop, stream=shouldStream)
         context.voice_client.play(player, after=lambda e: logging.error('Player error: %s' % e) if e else None)
 
-    await context.send(f'Now playing: {player.title} at {context.voice_client.source.volume}% volume.')
+    await context.send(f"Now playing: {player.title} at {context.voice_client.source.volume * 100:.0f}% volume in {'loop' if context.voice_client.loop else 'single'} mode.")
 
 # Set audio volume to given % value.
-async def volume_command(context, volume: int):
+async def volume_command(context, volume):
     if context.voice_client is None:
         return logging.info('Not connected to a voice channel.')
 
-    context.voice_client.source.volume = volume / 100
+    context.voice_client.source.volume = int(volume) / 100
     await context.send(f'Changed volume to {volume}%')
 
 # Toggle loop option for audio player.
 async def loop_command(context):
-    context.voice_client.loop ^= True
-    play_mode = 'loop' if context.voice_client.loop else 'single'
-    await context.send(f'Playing in {play_mode} mode.')
+    context.voice_client.loop = not context.voice_client.loop
+    await context.send(f"Playing in {'loop' if context.voice_client.loop else 'single'} mode.")
 
 # Stop sending audio to the voice channel.
 async def stop_command(context):
@@ -44,9 +43,7 @@ async def disconnect_command(context):
     await context.voice_client.disconnect()
 
 # Ensure connection to voice channel before invoking `yt` and `stream` commands.
-@yt.before_invoke
-@stream.before_invoke
-async def ensure_voice(self, context):
+async def ensure_voice(context):
     if context.voice_client is None:
         if context.author.voice:
             await context.author.voice.channel.connect()

@@ -10,11 +10,20 @@ async def remove_command_message(message):
         logging.error('Failed to delete message.')
         return
 
+# Checks if command can be called by given user in given channel.
 def should_perform_command(context):
-    return check_author_permission(context.command.name, context.channel.id, context.author.id) and check_channel_id(context.command.name, context.channel.id)
+    if not check_author_permission(context.command.name, context.author.id):
+        logging.error(f'should_perform_command: user without permissions to use command. {context.author.name} {context.message.content}')
+        return False
+
+    if not check_channel_id(context.command.name, context.channel.id):
+        logging.error(f'should_perform_command: command called in wrong channel. {context.channel.name} {context.message.content}')
+        return False
+
+    return True
 
 # Checks if user that issued admin command is in permissions list.
-def check_author_permission(command, channel_id, author_id):
+def check_author_permission(command, author_id):
     if command in bot_environment.admin_commands:
         return str(author_id) == str(bot_environment.admin_id)
     else:

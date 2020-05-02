@@ -2,7 +2,7 @@ import logging
 
 async def send_message_command(context, args):
 
-    if not len(args) > 2:
+    if not len(args) >= 2:
         logging.error(f'send_message_command: Not enough arguments passed. {args}')
         return
 

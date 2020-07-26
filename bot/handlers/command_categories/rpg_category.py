@@ -3,6 +3,7 @@ from discord.ext import commands
 from ..helpers import remove_command_message, should_perform_command
 from ..command_handlers.add_dates_command import add_dates_command
 from ..command_handlers.check_dates_command import check_dates_command
+from ..command_handlers.append_dates_command import append_dates_command
 
 class RPGCommands(commands.Cog):
     """
@@ -47,3 +48,18 @@ class RPGCommands(commands.Cog):
             return
 
         await check_dates_command(context)
+
+    @commands.command(name='appendDates')
+    async def append_dates(self, context, message, dates):
+        """
+        Edits given message by appending new dates.
+
+        Removes message with command.
+        Usable only in channels and by users specified in environment configuration.
+        """
+        await remove_command_message(context.message)
+
+        if not should_perform_command(context):
+            return
+
+        await append_dates_command(context, message, dates)

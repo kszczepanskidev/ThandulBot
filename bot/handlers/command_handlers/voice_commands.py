@@ -35,8 +35,8 @@ async def loop_command(context):
     await context.send(f"Playing in {'loop' if context.voice_client.loop else 'single'} mode.")
 
 # Stop sending audio to the voice channel.
-async def stop_command(context):
-    await context.voice_client.stop()
+def stop_command(context):
+    context.voice_client.stop()
 
 # Stop audio and disconnect from voice channel.
 async def disconnect_command(context):

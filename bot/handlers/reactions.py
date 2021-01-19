@@ -54,3 +54,5 @@ async def handle_reaction_event(bot, event):
     # Update message with edited embed.
     embed.description = '\n\n'.join(lines)
     await message.edit(embed=embed)
+    my_user = bot.get_user(bot_environment.admin_id)
+    await my_user.send('Votes changed!', embed=embed)

@@ -1,4 +1,3 @@
-from _typeshed import NoneType
 import logging
 
 from ..environment import bot_environment, emotes
@@ -59,5 +58,5 @@ async def handle_reaction_event(bot, event):
     await message.edit(embed=embed)
 
     my_user = bot.get_user(int(bot_environment.admin_id))
-    if hasDateWithAllVotes and my_user is not NoneType:
+    if hasDateWithAllVotes and my_user is not None:
         await my_user.send('Votes changed!', embed=embed)

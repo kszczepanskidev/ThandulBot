@@ -28,6 +28,7 @@ async def handle_reaction_event(bot, event):
     description = embed.description
     lines = [line.replace('**', '') for line in description.split('\n') if line != '']
 
+    hasDateWithAllVotes = False
     # Update all lines to avoid async errors.
     for (it, line) in enumerate(lines):
         # Get usernames for edited reaction.
@@ -47,6 +48,7 @@ async def handle_reaction_event(bot, event):
 
         # Make text bold when all users voted.
         if all(id in [user.id for user in voting_users] for id in bot_environment.user_ids[event.guild_id]):
+            hasDateWithAllVotes = True
             line = '**' + line + '**'
 
         lines[it] = line
@@ -54,5 +56,7 @@ async def handle_reaction_event(bot, event):
     # Update message with edited embed.
     embed.description = '\n\n'.join(lines)
     await message.edit(embed=embed)
-    my_user = bot.get_user(bot_environment.admin_id)
-    await my_user.send('Votes changed!', embed=embed)
+
+    my_user = bot.get_user(int(bot_environment.admin_id))
+    if hasDateWithAllVotes and my_user is not None:
+        await my_user.send('Votes changed!', embed=embed)

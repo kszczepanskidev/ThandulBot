@@ -1,6 +1,10 @@
 import logging
+from datetime import datetime, timedelta
+from bot import bot
 
 from ..environment import bot_environment, emotes
+
+bot.last_message_sent_at = datetime(2000, 1, 1)
 
 async def handle_reaction_event(bot, event):
     # Do not handle reactions made by bot.
@@ -59,4 +63,10 @@ async def handle_reaction_event(bot, event):
 
     my_user = bot.get_user(int(bot_environment.admin_id))
     if hasDateWithAllVotes and my_user is not None:
+        await notifyAboutFullVoteDate(my_user, embed)
+
+async def notifyAboutFullVoteDate(my_user, embed):
+    current_date = datetime.now()
+    if bot.last_message_sent_at + timedelta(minutes=2) <= current_date:
+        bot.last_message_sent_at = current_date 
         await my_user.send('Votes changed!', embed=embed)

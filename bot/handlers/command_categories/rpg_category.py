@@ -13,12 +13,13 @@ class RPGCommands(commands.Cog):
     """
 
     @commands.command(name='addDates')
-    async def add_dates(self, context, dates):
+    async def add_dates(self, context, dates, *args):
         """
         Posts embed message with dates for players to vote for with corresponding reactions.
 
         Parameters:
             - dates: list of dates for poll in `%d.%m` format, separated with semicolon.
+            - args: coillection of strings that will create custom message to be put as title above dates list.
 
         Removes message with command. 
         Usable only in channels and by users specified in environment configuration.
@@ -28,7 +29,7 @@ class RPGCommands(commands.Cog):
         if not should_perform_command(context):
             return
 
-        await add_dates_command(context, dates)
+        await add_dates_command(context, dates, ' '.join(args))
 
     @commands.command(name='twat')
     async def check_dates(self, context):

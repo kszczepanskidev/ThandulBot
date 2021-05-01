@@ -10,7 +10,7 @@ from ..helpers import get_role_mention
 
 # Sends message with rich embed with dates given in command message
 # assigning emote to each and reactions for voting under sent message.
-async def add_dates_command(context, dates):
+async def add_dates_command(context, dates, customMessage):
 
     # Extract dates from command parameter.
     dates = findall(r'(\d{1,2}\.\d{1,2};{1})', dates + ';')
@@ -25,7 +25,7 @@ async def add_dates_command(context, dates):
 
     # Create Rich Embed with given dates.
     embed = Embed(
-        title='Terminy na kolejny tydzień. Oznaczcie które dni wam pasują:',
+        title=('Terminy na kolejny tydzień. Oznaczcie które dni wam pasują:' if customMessage == None else customMessage),
         type='rich',
         description= '\n\n'.join(['{}{}{}'.format(emotes[it], u'\u00A0'*4, str(datetime.strptime(date, '%d.%m;').replace(year=datetime.now().year).strftime('%d.%m, %A'))) for (it, date) in enumerate(dates)]),
     )

@@ -80,8 +80,6 @@ class RPGCommands(commands.Cog):
 
         if self.running_task != None: 
             reminder_loop.restart(context, user, ' '.join(args))
-            # self.running_task.cancel()
-            # while self.running_task.is_being_cancelled(): pass
         else:
             self.running_task = reminder_loop.start(context, user, ' '.join(args))
 

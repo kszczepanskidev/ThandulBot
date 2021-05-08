@@ -1,6 +1,6 @@
 from discord.ext import commands
 
-from ..helpers import remove_command_message, should_perform_command
+from ..helpers import remove_command_message, should_perform_command, reminder_loop
 from ..command_handlers.add_dates_command import add_dates_command
 from ..command_handlers.check_dates_command import check_dates_command
 from ..command_handlers.append_dates_command import append_dates_command
@@ -64,3 +64,16 @@ class RPGCommands(commands.Cog):
             return
 
         await append_dates_command(context, message, dates)
+
+    @commands.command(name='startReminder')
+    async def startUserReminder(self, context, user, *args):
+        """
+        Begins reminder loop to send a message daily to given user.
+
+        Usable only by users specified in environment configuration.
+        """
+
+        if not should_perform_command(context):
+            return
+
+        reminder_loop.start(context, user, ' '.join(args))

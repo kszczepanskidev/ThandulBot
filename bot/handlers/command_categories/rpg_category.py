@@ -77,3 +77,16 @@ class RPGCommands(commands.Cog):
             return
 
         reminder_loop.start(context, user, ' '.join(args))
+
+    @commands.command(name='stopReminder')
+    async def stoptUserReminder(self, context):
+        """
+        Stops reminder loops that send a message daily to given user.
+
+        Usable only by users specified in environment configuration.
+        """
+
+        if not should_perform_command(context):
+            return
+
+        reminder_loop.stop()

@@ -1,4 +1,5 @@
 import logging
+from discord.ext import tasks
 
 from ..environment import bot_environment
 
@@ -45,3 +46,10 @@ def get_role_mention(context):
     except:
         logging.error('No role to mention.')
         raise Exception()
+
+# Send message to given user every 24 hours.
+@tasks.loop(hours=24)
+async def reminder_loop(context, user, message):
+    reminder_user = context.bot.get_user(int(user))
+    if reminder_user == None: return
+    await reminder_user.send(message)

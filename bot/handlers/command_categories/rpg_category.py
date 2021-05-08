@@ -6,6 +6,8 @@ from ..command_handlers.check_dates_command import check_dates_command
 from ..command_handlers.append_dates_command import append_dates_command
 
 class RPGCommands(commands.Cog):
+    running_task = None
+
     """
     Commands that helps in organising RPG Tabletop game sessions.
     Messages with command are removed. 
@@ -76,10 +78,15 @@ class RPGCommands(commands.Cog):
         if not should_perform_command(context):
             return
 
-        reminder_loop.start(context, user, ' '.join(args))
+        if self.running_task != None: 
+            reminder_loop.restart(context, user, ' '.join(args))
+            # self.running_task.cancel()
+            # while self.running_task.is_being_cancelled(): pass
+        else:
+            self.running_task = reminder_loop.start(context, user, ' '.join(args))
 
     @commands.command(name='stopReminder')
-    async def stoptUserReminder(self, context):
+    async def stopUserReminder(self, context):
         """
         Stops reminder loops that send a message daily to given user.
 
@@ -89,4 +96,4 @@ class RPGCommands(commands.Cog):
         if not should_perform_command(context):
             return
 
-        reminder_loop.stop()
+        reminder_loop.cancel()

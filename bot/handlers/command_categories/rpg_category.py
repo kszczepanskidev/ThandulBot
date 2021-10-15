@@ -1,6 +1,6 @@
 from discord.ext import commands
 
-from ..helpers import remove_command_message, should_perform_command, reminder_loop
+from ..helpers import remove_command_message, should_perform_command, should_perform_gm_command, reminder_loop
 from ..command_handlers.add_dates_command import add_dates_command
 from ..command_handlers.check_dates_command import check_dates_command
 from ..command_handlers.append_dates_command import append_dates_command
@@ -21,14 +21,14 @@ class RPGCommands(commands.Cog):
 
         Parameters:
             - dates: list of dates for poll in `%d.%m` format, separated with semicolon.
-            - args: coillection of strings that will create custom message to be put as title above dates list.
+            - args: collection of strings that will create custom message to be put as custom title above dates list.
 
         Removes message with command. 
-        Usable only in channels and by users specified in environment configuration.
+        Usable only in channels and by game masters specified in environment configuration.
         """
         await remove_command_message(context.message)
 
-        if not should_perform_command(context):
+        if not should_perform_gm_command(context):
             return
 
         await add_dates_command(context, dates, ' '.join(args))

@@ -32,6 +32,10 @@ async def handle_reaction_event(bot, event):
     description = embed.description
     lines = [line.replace('**', '') for line in description.split('\n') if line != '']
 
+    # Extract GM id from message and get his players from config.
+    gm_id = message.content.split('GM:')[-1][2:-1]
+    gm_players_ids = bot_environment.gm_list[int(gm_id)]
+
     hasDateWithAllVotes = False
     # Update all lines to avoid async errors.
     for (it, line) in enumerate(lines):
@@ -51,7 +55,7 @@ async def handle_reaction_event(bot, event):
             line += f"[{', '.join(usernames)}]"
 
         # Make text bold when all users voted.
-        if all(id in [user.id for user in voting_users] for id in bot_environment.user_ids[event.guild_id]):
+        if all(id in [user.id for user in voting_users] for id in gm_players_ids):
             hasDateWithAllVotes = True
             line = '**' + line + '**'
 
@@ -61,12 +65,12 @@ async def handle_reaction_event(bot, event):
     embed.description = '\n\n'.join(lines)
     await message.edit(embed=embed)
 
-    my_user = bot.get_user(int(bot_environment.admin_id))
-    if hasDateWithAllVotes and my_user is not None:
-        await notifyAboutFullVoteDate(my_user, embed)
+    gm_user = bot.get_user(int(gm_id))
+    if hasDateWithAllVotes and gm_user is not None:
+        await notifyAboutFullVoteDate(gm_user, embed)
 
-async def notifyAboutFullVoteDate(my_user, embed):
+async def notifyAboutFullVoteDate(gm_user, embed):
     current_date = datetime.now()
     if bot.last_message_sent_at + timedelta(minutes=2) <= current_date:
         bot.last_message_sent_at = current_date 
-        await my_user.send('Votes changed!', embed=embed)
+        await gm_user.send('Votes changed!', embed=embed)

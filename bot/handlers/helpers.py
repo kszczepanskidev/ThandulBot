@@ -23,6 +23,19 @@ def should_perform_command(context):
 
     return True
 
+# Checks if command can be called by given game master in given channel.
+def should_perform_gm_command(context):
+    gm_list = [str(gm_id) for gm_id in bot_environment.gm_list.keys()]
+    if not str(context.author.id) in gm_list:
+        logging.error(f'should_perform_gm_command: user not defined in game masters list. {context.author.name} {context.message.content}')
+        return False
+
+    if not check_channel_id(context.command.name, context.channel.id):
+        logging.error(f'should_perform_gm_command: command called in wrong channel. {context.channel.name} {context.message.content}')
+        return False
+
+    return True
+
 # Checks if user that issued admin command is in permissions list.
 def check_author_permission(command, author_id):
     if command in bot_environment.admin_commands:

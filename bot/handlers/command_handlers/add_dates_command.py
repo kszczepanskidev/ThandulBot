@@ -12,6 +12,7 @@ from ..helpers import get_role_mention
 # assigning emote to each and reactions for voting under sent message.
 async def add_dates_command(context, dates, customMessage):
 
+    dates = []
     if ';' in dates:
         # Extract singular dates from command parameter.
         dates = findall(r'(\d{1,2}\.\d{1,2};{1})', dates + ';')

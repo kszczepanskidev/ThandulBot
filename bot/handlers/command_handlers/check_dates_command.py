@@ -21,11 +21,15 @@ async def check_dates_command(context):
     bot_messages = [msg for msg in messages if str(msg.author.id) == bot_environment.bot_id]
     last_dates_message = next(msg for msg in bot_messages if len([embed for embed in msg.embeds if embed.type == 'rich']) > 0)
 
-    # Get ids of mentinable users for given server from config file and cross-check it with ids of all users on the server.
+    # Extract GM id from message and get his players from config.
+    gm_id = last_dates_message.content.split('GM:')[-1][2:-1]
+    gm_players_ids = bot_environment.gm_list[int(gm_id)]
+
+    # Get ids of mentionable users for given server from config file and cross-check it with ids of all users on the server.
     # Exits if there is no matching users or config file doesn't include id of current server.
     guild_member_ids = [member.id for member in context.guild.members]
     try:
-        mentionable_members = [member_id for member_id in bot_environment.user_ids[context.guild.id] if member_id in guild_member_ids]
+        mentionable_members = [member_id for member_id in gm_players_ids if member_id in guild_member_ids]
         if len(mentionable_members) == 0:
             logging.error('No mentionable users.')
             return

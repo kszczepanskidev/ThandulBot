@@ -12,7 +12,6 @@ from ..helpers import get_role_mention
 # assigning emote to each and reactions for voting under sent message.
 async def add_dates_command(context, dates, customMessage):
 
-    dates = []
     if ';' in dates:
         # Extract singular dates from command parameter.
         dates = findall(r'(\d{1,2}\.\d{1,2};{1})', dates + ';')
@@ -21,6 +20,8 @@ async def add_dates_command(context, dates, customMessage):
         dates_range = [datetime.strptime(date, '%d.%m').replace(year=datetime.now().year) for date in dates.split('-', 1)]
         dates = [dates_range[0] + timedelta(days=shift) for shift in range((dates_range[1] - dates_range[0]).days + 1)]
         dates = [str(date.strftime('%d.%m;')) for date in dates]
+    else:
+        dates = []
 
     # Check if there are any dates and if their amount isn't to big.
     if len(dates) == 0:

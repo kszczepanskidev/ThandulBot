@@ -1,5 +1,3 @@
-import os
-
 from bot.environment import bot_environment
 from bot.bot import bot as ThandulBot
 

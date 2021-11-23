@@ -1,7 +1,5 @@
 from re import findall
-from discord import Embed, Emoji, utils
-from itertools import zip_longest
-from math import ceil
+from discord import Embed
 import logging
 from datetime import datetime, timedelta
 
@@ -38,14 +36,13 @@ async def add_dates_command(context, dates, customMessage):
         description= '\n\n'.join(['{}{}{}'.format(emotes[it], u'\u00A0'*4, str(datetime.strptime(date, '%d.%m;').replace(year=datetime.now().year).strftime('%d.%m, %A'))) for (it, date) in enumerate(dates)]),
     )
 
-    # Check if config file have role mention for current server.
-    try:
-        role_mention_id = get_role_mention(context)
-    except:
-        return
+    # Get players to mention
+    players = bot_environment.gm_list[context.author.id]
+    player_mentions = [f'<@&{id}>' for id in players]
+    if len(player_mentions) == 0: return
 
     # Send message with proper mention and rich embed.
-    dates_msg = await context.send(f'<@&{role_mention_id}> GM:<@{context.author.id}>', embed=embed)
+    dates_msg = await context.send(f'Gracze: {" ".join(player_mentions)}\nGM: <@{context.author.id}>', embed=embed)
 
     # Add reactions for voting.
     for i in range(0, len(dates)):

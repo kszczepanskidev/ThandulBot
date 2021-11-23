@@ -1,7 +1,4 @@
 from re import findall
-from discord import Embed, Emoji, utils
-from itertools import zip_longest
-from math import ceil
 import logging
 from datetime import datetime
 

@@ -38,7 +38,7 @@ async def add_dates_command(context, dates, customMessage):
 
     # Get players to mention
     players = bot_environment.gm_list[context.author.id]
-    player_mentions = [f'<@&{id}>' for id in players]
+    player_mentions = [f'<@{id}>' for id in players]
     if len(player_mentions) == 0: return
 
     # Send message with proper mention and rich embed.

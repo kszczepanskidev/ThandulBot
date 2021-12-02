@@ -33,7 +33,7 @@ async def handle_reaction_event(bot, event):
     lines = [line.replace('**', '') for line in description.split('\n') if line != '']
 
     # Extract GM id from message and get his players from config.
-    gm_id = message.content.split('GM:')[-1][2:-1]
+    gm_id = message.content.split('GM:')[-1][3:-1]
     gm_players_ids = bot_environment.gm_list[int(gm_id)]
 
     hasDateWithAllVotes = False
@@ -72,5 +72,5 @@ async def handle_reaction_event(bot, event):
 async def notifyAboutFullVoteDate(gm_user, embed):
     current_date = datetime.now()
     if bot.last_message_sent_at + timedelta(minutes=2) <= current_date:
-        bot.last_message_sent_at = current_date 
+        bot.last_message_sent_at = current_date
         await gm_user.send('Votes changed!', embed=embed)

@@ -8,8 +8,8 @@ from .command_categories.animal_photo_category import AnimalRandomPhotos
 
 
 # Register commands categories.
-def bindCommands(bot):
-    bot.add_cog(AdminCommands())
-    bot.add_cog(RPGCommands())
-    bot.add_cog(Information())
-    bot.add_cog(AnimalRandomPhotos())
+async def bindCommands(bot):
+    await bot.add_cog(AdminCommands())
+    await bot.add_cog(RPGCommands())
+    await bot.add_cog(Information())
+    await bot.add_cog(AnimalRandomPhotos())

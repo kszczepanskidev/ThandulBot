@@ -43,7 +43,7 @@ async def handle_reaction_event(bot, event):
         emoji = line[0]
         reactions =  message.reactions
         reaction = [reaction for reaction in reactions if str(reaction) == str(emoji)][0]
-        users = await reaction.users().flatten()
+        users = [user async for user in reaction.users()]
         voting_users = [user for user in users if user.id != bot.user.id]
         usernames = [user.name for user in voting_users]
 
@@ -66,8 +66,9 @@ async def handle_reaction_event(bot, event):
 
         lines[it] = line
 
-    cant_users = [user.name for user in await [reaction for reaction in message.reactions if str(reaction) == u'\u274c'][0].users().flatten() if user.id != bot.user.id]
+    cant_users = [user.name async for user in [reaction for reaction in message.reactions if str(reaction) == u'\u274c'][0].users() if user.id != bot.user.id]
     if len(cant_users) > 0 and len([line for line in lines if u'\u274c' in str(line)]) == 0:
+        hasDateWithAllVotes = True
         lines.append('**' + u'\u274c' + u'\u00A0'*4 + f"Blibors [{', '.join(cant_users)}]**")
 
     # Update message with edited embed.

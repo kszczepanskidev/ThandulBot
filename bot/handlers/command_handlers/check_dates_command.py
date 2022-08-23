@@ -38,7 +38,7 @@ async def check_dates_command(context):
         return
 
     # Get ids of users that gave any reaction under last dates message.
-    last_dates_message_reactions = [await reaction.users().flatten() for reaction in last_dates_message.reactions]
+    last_dates_message_reactions = [[user async for user in reaction.users()] async for reaction in last_dates_message.reactions]
     users_that_reacted = set([str(user.id) for users in last_dates_message_reactions for user in users if str(user.id) != bot_environment.bot_id])
 
     # Check if there are users that didn't reacted to mention them in a message asking to vote.
@@ -48,7 +48,7 @@ async def check_dates_command(context):
         return
 
     # If all given in bot setup users voted, check for selected dates by them.
-    reactions_with_full_votes = [reaction.emoji for reaction in last_dates_message.reactions if set(mentionable_members).issubset([user.id for user in await reaction.users().flatten()])]
+    reactions_with_full_votes = [reaction.emoji async for reaction in last_dates_message.reactions if set(mentionable_members).issubset([user.id async for user in reaction.users()])]
     dates_selected_by_all = [search(reaction + u'\u00A0'*4 + r'(\d{1,2}\.\d{1,2})', date).group(1) for date in last_dates_message.embeds[0].description.split('\n\n') for reaction in reactions_with_full_votes if reaction in date]
 
     # Sends message with selected dates or information that no date was selected by everyone.

@@ -19,7 +19,7 @@ class Information(commands.Cog):
         Parameters:
             - city name: name of city for which weather should be fetched.
 
-        Removes message with command. 
+        Removes message with command.
         Usable only in channels specified in environment configuration.
         """
         await remove_command_message(context.message)

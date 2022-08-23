@@ -33,4 +33,4 @@ bot_environment = Environment(
     literal_eval(environ.get('GM_LIST', getenv('GM_LIST'))),
 )
 
-emotes = ['🇦', '🇧', '🇨', '🇩', '🇪', '🇫', '🇬', '🇭', '🇮', '🇯', '🇰', '🇱', '🇲', '🇳', '🇴', ]
+emotes = literal_eval(environ.get('EMOTES', getenv('EMOTES')))

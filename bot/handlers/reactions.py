@@ -24,7 +24,7 @@ async def handle_reaction_event(bot, event):
         return
 
     if event.emoji.name not in emotes:
-        logging.info('handle_reaction_event: Not supported emoji')
+        logging.info(f'handle_reaction_event: Not supported emoji - {event.emoji.name}')
         return
 
     # Get text with dates split into lines.
@@ -47,6 +47,11 @@ async def handle_reaction_event(bot, event):
         voting_users = [user for user in users if user.id != bot.user.id]
         usernames = [user.name for user in voting_users]
 
+        # Remove line for ❌ reaction if noone voted.
+        if str(reaction) == u'\u274c' and len(voting_users) == 0:
+            lines.pop(it)
+            continue
+
         # Edit line with edited reaction.
         line = line.split('[')[0]
         if len(usernames) > 0:
@@ -54,12 +59,16 @@ async def handle_reaction_event(bot, event):
                 line += ' '
             line += f"[{', '.join(usernames)}]"
 
-        # Make text bold when all users voted.
-        if all(id in [user.id for user in voting_users] for id in gm_players_ids):
+        # Make text bold when all users voted or someone voted on ❌.
+        if all(id in [user.id for user in voting_users] for id in gm_players_ids) or str(reaction) == u'\u274c':
             hasDateWithAllVotes = True
             line = '**' + line + '**'
 
         lines[it] = line
+
+    cant_users = [user.name for user in await [reaction for reaction in message.reactions if str(reaction) == u'\u274c'][0].users().flatten() if user.id != bot.user.id]
+    if len(cant_users) > 0 and len([line for line in lines if u'\u274c' in str(line)]) == 0:
+        lines.append('**' + u'\u274c' + u'\u00A0'*4 + f"Blibors [{', '.join(cant_users)}]**")
 
     # Update message with edited embed.
     embed.description = '\n\n'.join(lines)

@@ -9,6 +9,7 @@ from ..helpers import get_role_mention
 # Sends message with rich embed with dates given in command message
 # assigning emote to each and reactions for voting under sent message.
 async def add_dates_command(context, dates, customMessage):
+    date_emotes = [emote for emote in emotes if str(emote) != u'\u274c']
 
     if ';' in dates:
         # Extract singular dates from command parameter.
@@ -25,7 +26,7 @@ async def add_dates_command(context, dates, customMessage):
     if len(dates) == 0:
         logging.error('add_dates_command: No dates found')
         return
-    elif len(dates) > len(emotes):
+    elif len(dates) > len(date_emotes):
         logging.error('add_dates_command: Too many dates found')
         return
 
@@ -33,7 +34,7 @@ async def add_dates_command(context, dates, customMessage):
     embed = Embed(
         title='Terminy na kolejny tydzień. Oznaczcie które dni wam pasują:' if (customMessage == None or customMessage == '') else customMessage,
         type='rich',
-        description= '\n\n'.join(['{}{}{}'.format(emotes[it], u'\u00A0'*4, str(datetime.strptime(date, '%d.%m;').replace(year=datetime.now().year).strftime('%d.%m, %A'))) for (it, date) in enumerate(dates)]),
+        description= '\n\n'.join(['{}{}{}'.format(date_emotes[it], u'\u00A0'*4, str(datetime.strptime(date, '%d.%m;').replace(year=datetime.now().year).strftime('%d.%m, %A'))) for (it, date) in enumerate(dates)]),
     )
 
     # Get players to mention
@@ -46,7 +47,7 @@ async def add_dates_command(context, dates, customMessage):
 
     # Add reactions for voting.
     for i in range(0, len(dates)):
-        await dates_msg.add_reaction(emotes[i])
+        await dates_msg.add_reaction(date_emotes[i])
 
-    # Add `X` reaction for signaling no date chosen.
-    await dates_msg.add_reaction('❌')
+    # Add ❌ reaction for signaling no date chosen.
+    await dates_msg.add_reaction(u'\u274c')

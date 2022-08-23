@@ -10,7 +10,7 @@ class RPGCommands(commands.Cog):
 
     """
     Commands that helps in organising RPG Tabletop game sessions.
-    Messages with command are removed. 
+    Messages with command are removed.
     Usable only in channels and by users specified in environment configuration.
     """
 
@@ -23,7 +23,7 @@ class RPGCommands(commands.Cog):
             - dates: list of dates for poll in `%d.%m` format, separated with semicolon.
             - args: collection of strings that will create custom message to be put as custom title above dates list.
 
-        Removes message with command. 
+        Removes message with command.
         Usable only in channels and by game masters specified in environment configuration.
         """
         await remove_command_message(context.message)
@@ -78,7 +78,7 @@ class RPGCommands(commands.Cog):
         if not should_perform_command(context):
             return
 
-        if self.running_task != None: 
+        if self.running_task != None:
             reminder_loop.restart(context, user, ' '.join(args))
         else:
             self.running_task = reminder_loop.start(context, user, ' '.join(args))

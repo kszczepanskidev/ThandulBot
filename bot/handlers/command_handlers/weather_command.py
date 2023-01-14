@@ -4,7 +4,7 @@ from discord import Embed
 
 from ...environment import bot_environment
 
-async def weather_command(context, city):
+async def weather_command(interaction, city):
     weather_json = get('http://api.openweathermap.org/data/2.5/weather?q={}&APPID={}&units=metric&lang=pl'.format(city, bot_environment.weather_token)).json()
 
     if weather_json['cod'] != 200:
@@ -93,4 +93,4 @@ async def weather_command(context, city):
         inline=True,
     )
 
-    await context.send(embed=embed)
+    await interaction.response.send_message(embed=embed)

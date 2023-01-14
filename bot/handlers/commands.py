@@ -1,5 +1,3 @@
-from discord.ext import commands
-
 from ..environment import bot_environment
 from .command_categories.admin_category import AdminCommands
 from .command_categories.rpg_category import RPGCommands
@@ -8,8 +6,8 @@ from .command_categories.animal_photo_category import AnimalRandomPhotos
 
 
 # Register commands categories.
-async def bindCommands(bot):
-    await bot.add_cog(AdminCommands())
-    await bot.add_cog(RPGCommands())
-    await bot.add_cog(Information())
-    await bot.add_cog(AnimalRandomPhotos())
+def bindCommands(commands_tree):
+    commands_tree.add_command(AdminCommands(name='admin'))
+    commands_tree.add_command(RPGCommands(name='rpg'))
+    commands_tree.add_command(Information(name='general'))
+    commands_tree.add_command(AnimalRandomPhotos(name='animal'))

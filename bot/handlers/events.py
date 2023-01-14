@@ -1,11 +1,14 @@
+from discord import Object
+
 from .system_events import *
 from .reactions import handle_reaction_event
 
-def bindEvents(bot):
+def bindEvents(bot, commands_tree):
 
     # Connected to Discord.
     @bot.event
     async def on_ready():
+        await commands_tree.sync()
         handle_on_ready(bot)
 
     # Message error.

@@ -1,5 +1,4 @@
-import discord
-from discord.ext import commands
+from discord import Client, Intents, app_commands
 from .logger import start_logger
 import locale
 
@@ -8,5 +7,6 @@ from bot.handlers.handlers import init_handlers
 
 locale.setlocale(locale.LC_ALL, bot_environment.locale)
 start_logger()
-bot = commands.Bot(command_prefix=bot_environment.command_symbol, intents=discord.Intents.all())
-init_handlers(bot)
+bot = Client(intents=Intents.all())
+commands_tree = app_commands.CommandTree(bot)
+init_handlers(bot, commands_tree)

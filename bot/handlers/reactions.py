@@ -36,12 +36,14 @@ async def handle_reaction_event(bot, event):
     gm_id = message.content.split('GM:')[-1][3:-1]
     gm_players_ids = bot_environment.gm_list[int(gm_id)]
 
+    # Extract reactions and users from message.
+    reactions = message.reactions
+
     hasDateWithAllVotes = False
     # Update all lines to avoid async errors.
     for (it, line) in enumerate(lines):
         # Get usernames for edited reaction.
         emoji = line[0]
-        reactions =  message.reactions
         reaction = [reaction for reaction in reactions if str(reaction) == str(emoji)][0]
         users = [user async for user in reaction.users()]
         voting_users = [user for user in users if user.id != bot.user.id]
@@ -76,11 +78,20 @@ async def handle_reaction_event(bot, event):
     await message.edit(embed=embed)
 
     gm_user = bot.get_user(int(gm_id))
+    player_users = [bot.get_user(int(player_id)) for player_id in gm_players_ids]
     if hasDateWithAllVotes and gm_user is not None:
-        await notifyAboutFullVoteDate(gm_user, embed)
+        logging.info(f'Notifying {gm_user} and {player_users}')
+        await notifyAboutFullVoteDate([gm_user] + player_users, embed)
 
-async def notifyAboutFullVoteDate(gm_user, embed):
+async def notifyAboutFullVoteDate(users, embed):
     current_date = datetime.now()
     if bot.last_message_sent_at + timedelta(minutes=2) <= current_date:
         bot.last_message_sent_at = current_date
-        await gm_user.send('Votes changed!', embed=embed)
+        for user in users:
+            try:
+                await user.send('Votes changed!', embed=embed)
+            except:
+                logging.info(f'failed to sent message to {user}')
+
+    else:
+        logging.info('Notification sent less than 2 minutes ago')

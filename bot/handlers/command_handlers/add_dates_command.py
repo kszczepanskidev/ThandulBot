@@ -19,6 +19,8 @@ async def add_dates_command(interaction, dates, customMessage):
         # Extract singular dates from command parameter.
         dates = findall(r'(\d{1,2}\.\d{1,2};{1})', dates + ';')
 
+    dates = [date.replace(';', f'.{datetime.now().year};') for date in dates]
+
     # Check if there are any dates and if their amount isn't to big.
     if len(dates) == 0:
         await handle_user_error(interaction, 'add_dates_command', f'No dates found in {dates}')
@@ -31,7 +33,7 @@ async def add_dates_command(interaction, dates, customMessage):
     embed = Embed(
         title='Terminy na kolejny tydzień. Oznaczcie które dni wam pasują:' if customMessage == None else customMessage,
         type='rich',
-        description= '\n\n'.join(['{}{}{}'.format(date_emotes[it], u'\u00A0'*4, str(datetime.strptime(date, '%d.%m;').replace(year=datetime.now().year).strftime('%d.%m, %A'))) for (it, date) in enumerate(dates)]),
+        description= '\n\n'.join(['{}{}{}'.format(date_emotes[it], u'\u00A0'*4, str(datetime.strptime(date, '%d.%m.%Y;').replace(year=datetime.now().year).strftime('%d.%m, %A'))) for (it, date) in enumerate(dates)]),
     )
 
     # Get players to mention

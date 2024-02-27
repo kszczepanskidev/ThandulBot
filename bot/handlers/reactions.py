@@ -1,10 +1,12 @@
 import logging
 from datetime import datetime, timedelta
+from threading import Timer
+from asyncio import run
 from bot import bot
 
 from ..environment import bot_environment, emotes
 
-bot.last_message_sent_at = datetime(2000, 1, 1)
+_active_timer = None
 
 async def handle_reaction_event(bot, event):
     # Do not handle reactions made by bot.
@@ -30,18 +32,20 @@ async def handle_reaction_event(bot, event):
     # Get text with dates split into lines.
     embed = message.embeds[0]
     description = embed.description
-    lines = [line.replace('**', '') for line in description.split('\n') if line != '']
+    lines = [line.replace('***', '').replace('**', '') for line in description.split('\n') if line != '']
 
     # Extract GM id from message and get his players from config.
     gm_id = message.content.split('GM:')[-1][3:-1]
     gm_players_ids = bot_environment.gm_list[int(gm_id)]
 
-    hasDateWithAllVotes = False
+    # Extract reactions and users from message.
+    reactions = message.reactions
+
+    hasHighlightedLine = False
     # Update all lines to avoid async errors.
     for (it, line) in enumerate(lines):
         # Get usernames for edited reaction.
         emoji = line[0]
-        reactions =  message.reactions
         reaction = [reaction for reaction in reactions if str(reaction) == str(emoji)][0]
         users = [user async for user in reaction.users()]
         voting_users = [user for user in users if user.id != bot.user.id]
@@ -59,16 +63,18 @@ async def handle_reaction_event(bot, event):
                 line += ' '
             line += f"[{', '.join(usernames)}]"
 
-        # Make text bold when all users voted or someone voted on ❌.
-        if all(id in [user.id for user in voting_users] for id in gm_players_ids) or str(reaction) == u'\u274c':
-            hasDateWithAllVotes = True
-            line = '**' + line + '**'
+        # Make text bold when all users voted or someone voted on ❌ and bold italic if one vote is missing.
+        missing_votes_counter = [id in [user.id for user in voting_users] for id in gm_players_ids].count(False)
+        if missing_votes_counter < 2 or str(reaction) == u'\u274c':
+            hasHighlightedLine = True
+            markdown_modifier = '*' * (3 if missing_votes_counter == 1 else 2)
+            line = markdown_modifier + line + markdown_modifier
 
         lines[it] = line
 
     cant_users = [user.name async for user in [reaction for reaction in message.reactions if str(reaction) == u'\u274c'][0].users() if user.id != bot.user.id]
     if len(cant_users) > 0 and len([line for line in lines if u'\u274c' in str(line)]) == 0:
-        hasDateWithAllVotes = True
+        hasHighlightedLine = True
         lines.append('**' + u'\u274c' + u'\u00A0'*4 + f"Blibors [{', '.join(cant_users)}]**")
 
     # Update message with edited embed.
@@ -76,11 +82,27 @@ async def handle_reaction_event(bot, event):
     await message.edit(embed=embed)
 
     gm_user = bot.get_user(int(gm_id))
-    if hasDateWithAllVotes and gm_user is not None:
-        await notifyAboutFullVoteDate(gm_user, embed)
+    player_users = [bot.get_user(int(player_id)) for player_id in gm_players_ids]
+    if hasHighlightedLine and gm_user is not None:
+        logging.info(f'Notifying {gm_user} and {player_users}')
+        setupDelayedNotifyMessage([gm_user] + player_users, embed)
 
-async def notifyAboutFullVoteDate(gm_user, embed):
-    current_date = datetime.now()
-    if bot.last_message_sent_at + timedelta(minutes=2) <= current_date:
-        bot.last_message_sent_at = current_date
-        await gm_user.send('Votes changed!', embed=embed)
+async def setupDelayedNotifyMessage(users, embed):
+    # Invalidate previous timer.
+    if _active_timer != None:
+        _active_timer.cancel()
+
+    # Setup timer to send notify message after 2 minutes.
+    _active_timer = Timer(120, notifyAboutFullVoteDate, args=[users, embed])
+    _active_timer.start()
+
+def callAsyncNotifyFunction(users, embed):
+    # Run async function with `asyncio.run`.
+    run(notifyAboutFullVoteDate(users, embed))
+
+async def notifyAboutFullVoteDate(users, embed):
+    for user in users:
+        try:
+            await user.send('Votes changed!', embed=embed)
+        except:
+            logging.info(f'failed to sent message to {user}')

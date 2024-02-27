@@ -21,6 +21,8 @@ async def append_dates_command(interaction, message, dates):
         # Extract singular dates from command parameter.
         dates = findall(r'(\d{1,2}\.\d{1,2};{1})', dates + ';')
 
+    dates = [date.replace(';', f'.{datetime.now().year};') for date in dates]
+
     current_dates_count = len(message_to_edit.reactions) - 1
 
     # Check if there are any dates and if their amount isn't to big.
@@ -31,7 +33,7 @@ async def append_dates_command(interaction, message, dates):
         await handle_user_error(interaction, 'add_dates_command', f'Too many dates found in {dates}')
         return
 
-    new_dates = '\n\n'.join(['{}{}{}'.format(emotes[it + current_dates_count], u'\u00A0'*4, str(datetime.strptime(date, '%d.%m;').replace(year=datetime.now().year).strftime('%d.%m, %A'))) for (it, date) in enumerate(dates)])
+    new_dates = '\n\n'.join(['{}{}{}'.format(emotes[it + current_dates_count], u'\u00A0'*4, str(datetime.strptime(date, '%d.%m.%Y;').replace(year=datetime.now().year).strftime('%d.%m, %A'))) for (it, date) in enumerate(dates)])
 
     new_embed = message_to_edit.embeds[0]
     new_embed.description += '\n\n'

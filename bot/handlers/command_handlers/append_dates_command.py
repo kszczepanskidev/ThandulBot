@@ -21,6 +21,8 @@ async def append_dates_command(interaction, message, dates):
         # Extract singular dates from command parameter.
         dates = findall(r'(\d{1,2}\.\d{1,2};{1})', dates + ';')
 
+    dates = [date.replace(';', f'.{datetime.now().year};') for date in dates]
+
     current_dates_count = len(message_to_edit.reactions) - 1
 
     # Check if there are any dates and if their amount isn't to big.

@@ -32,6 +32,15 @@ def should_perform_gm_command(interaction):
 
     return True
 
+# Checks if command can be called by given Foundry VTT game master.
+def should_perform_foundry_admin_command(interaction):
+    foundry_gm_list = [str(fgm_id) for fgm_id in bot_environment.foundry_admins.keys()]
+    if not str(interaction.user.id) in foundry_gm_list:
+        handle_user_error(interaction, 'should_perform_foundry_admin_command', f'user not defined in foundry admins list. {interaction.user.name} {interaction.message.content}')
+        return False
+
+    return True
+
 # Checks if user that issued admin command is in permissions list.
 def check_author_permission(command, author_id):
     if command in bot_environment.admin_commands:

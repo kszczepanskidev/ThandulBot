@@ -2,7 +2,6 @@ import logging
 from datetime import datetime, timedelta
 from threading import Timer
 from asyncio import run_coroutine_threadsafe, get_running_loop
-from bot import bot
 
 from ..environment import bot_environment, emotes
 
@@ -43,6 +42,7 @@ async def handle_reaction_event(bot, event):
     reactions = message.reactions
 
     hasHighlightedLine = False
+    hasPossibleDate = False
     # Update all lines to avoid async errors.
     for (it, line) in enumerate(lines):
         # Get usernames for edited reaction.
@@ -52,7 +52,7 @@ async def handle_reaction_event(bot, event):
         voting_users = [user for user in users if user.id != bot.user.id]
         usernames = [user.name for user in voting_users]
 
-        # Remove line for ❌ reaction if noone voted.
+        # Remove line for ❌ reaction if no one voted.
         if str(reaction) == u'\u274c' and len(voting_users) == 0:
             lines.pop(it)
             continue
@@ -67,7 +67,10 @@ async def handle_reaction_event(bot, event):
         # Make text bold when all users voted or someone voted on ❌ and bold italic if one vote is missing.
         missing_votes_counter = [id in [user.id for user in voting_users] for id in gm_players_ids].count(False)
         if missing_votes_counter < 2 or str(reaction) == u'\u274c':
-            hasHighlightedLine = True
+            if missing_votes_counter == 0:
+                hasHighlightedLine = True
+            else:
+                hasPossibleDate = True
             markdown_modifier = '*' * (3 if missing_votes_counter == 1 else 2)
             line = markdown_modifier + line + markdown_modifier
 
@@ -84,11 +87,11 @@ async def handle_reaction_event(bot, event):
 
     gm_user = bot.get_user(int(gm_id))
     player_users = [bot.get_user(int(player_id)) for player_id in gm_players_ids]
-    if hasHighlightedLine and gm_user is not None:
+    if (hasHighlightedLine or hasPossibleDate) and gm_user is not None:
         logging.info(f'Notifying {gm_user} and {player_users}')
-        # await setupDelayedNotifyMessage([gm_user] + player_users, embed)
+        await setupDelayedNotifyMessage(event, [gm_user] + player_users, embed, channel, hasHighlightedLine)
 
-async def setupDelayedNotifyMessage(users, embed):
+async def setupDelayedNotifyMessage(event, users, embed, channel, sendDM):
     global _active_timer, _running_loop
 
     # Invalidate previous timer.
@@ -97,18 +100,25 @@ async def setupDelayedNotifyMessage(users, embed):
 
     # Setup timer to send notify message after 1 minute.
     _running_loop = get_running_loop()
-    _active_timer = Timer(60, callAsyncNotifyFunction, args=[users, embed])
+    _active_timer = Timer(60, callAsyncNotifyFunction, args=[event, users, embed, channel, sendDM])
     _active_timer.start()
 
-def callAsyncNotifyFunction(users, embed):
+def callAsyncNotifyFunction(event, users, embed, channel, sendDM):
     global _running_loop
 
     # Safely run async function with `asyncio.run_coroutine_threadsafe`.
-    run_coroutine_threadsafe(notifyAboutFullVoteDate(users, embed), _running_loop)
+    run_coroutine_threadsafe(notifyAboutFullVoteDate(event, users, embed, channel, sendDM), _running_loop)
 
-async def notifyAboutFullVoteDate(users, embed):
-    for user in users:
+async def notifyAboutFullVoteDate(event, users, embed, channel, sendDM):
+    if sendDM:
+        for user in users:
+            try:
+                await user.send('Votes changed!', embed=embed)
+            except Exception as e:
+                logging.error(f'Failed to send message to {user} - {e}')
+    else:
         try:
-            await user.send('Votes changed!', embed=embed)
+            role_mention = int(bot_environment.role_mentions[int(event.guild_id)][int(event.channel_id)])
+            await channel.send(f'<@&{role_mention}> One more vote and we have it')
         except Exception as e:
-            logging.error(f'failed to sent message to {user} - {e}')
+            logging.error(f'Failed to send message to {channel}')

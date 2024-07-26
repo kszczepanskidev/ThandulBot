@@ -7,7 +7,7 @@ from ..command_handlers.append_dates_command import append_dates_command
 
 class RPGCommands(app_commands.Group):
     """
-    Commands that helps in organising RPG Tabletop game sessions.
+    Commands that helps in organizing RPG Tabletop game sessions.
     Messages with command are removed.
     Usable only in channels and by users specified in environment configuration.
     """

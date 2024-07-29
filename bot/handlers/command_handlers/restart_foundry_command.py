@@ -12,4 +12,4 @@ async def restart_foundry_command(interaction, instance):
     instance_to_restart = instance if instance is not None and instance in instances else instances[0]
 
     system(f'pm2 reload FoundryVTT{instance_to_restart}')
-    await interaction.response.send_message(content=f'Restarting FoundryVTT{instance_to_restart} instance.')
+    await interaction.response.send_message(content=f'Restarting FoundryVTT{instance_to_restart} instance.', ephemeral=True)

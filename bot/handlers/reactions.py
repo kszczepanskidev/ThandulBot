@@ -77,8 +77,10 @@ async def handle_reaction_event(bot, event):
         lines[it] = line
 
     cant_users = [user.name async for user in [reaction for reaction in message.reactions if str(reaction) == u'\u274c'][0].users() if user.id != bot.user.id]
-    if len(cant_users) > 0 and len([line for line in lines if u'\u274c' in str(line)]) == 0:
+    hasCantUsers = len(cant_users) > 0
+    if hasCantUsers:
         hasHighlightedLine = True
+    if hasCantUsers and len([line for line in lines if u'\u274c' in str(line)]) == 0:
         lines.append('**' + u'\u274c' + u'\u00A0'*4 + f"Blibors [{', '.join(cant_users)}]**")
 
     # Update message with edited embed.

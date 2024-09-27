@@ -1,19 +1,14 @@
-import logging
+from ..helpers import handle_user_error
 
-async def send_message_command(context, args):
-
-    if not len(args) >= 2:
-        logging.error(f'send_message_command: Not enough arguments passed. {args}')
-        return
-
+async def send_message_command(interaction, channel, message):
     try:
-        channel = context.bot.get_channel(int(args[0]))
+        channel = interaction.client.get_channel(int(channel))
     except:
-        logging.error(f"send_message_command: Channel id can't be parsed. {args[0]}")
+        await handle_user_error(interaction, f"send_message_command: Channel id can't be parsed. {channel}")
         return
 
     if not channel:
-        logging.error(f"send_message_command: Channel with given id don't exist. {args[0]}")
+        await handle_user_error(interaction, f"send_message_command: Channel with given id don't exist. {channel}")
         return
 
-    await channel.send(" ".join(args[1:]))
+    await channel.send(" ".join(message))

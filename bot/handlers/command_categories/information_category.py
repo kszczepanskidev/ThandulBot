@@ -1,9 +1,9 @@
-from discord.ext import commands
+from discord import app_commands, Interaction
 
-from ..helpers import remove_command_message, should_perform_command
+from ..helpers import should_perform_command
 from ..command_handlers.weather_command import weather_command
 
-class Information(commands.Cog):
+class Information(app_commands.Group):
     """
     Commands that post information fetched from external API.
 
@@ -11,24 +11,20 @@ class Information(commands.Cog):
     Usable only in channels specified in environment configuration.
     """
 
-    @commands.command(name='weather')
-    async def weather(self, context, *args):
+    @app_commands.command(name='weather')
+    @app_commands.describe(city='name of city for which weather should be fetched.')
+    async def weather(self, interaction: Interaction, city: str):
         """
         Posts embed message with weather for given city.
 
         Parameters:
-            - city name: name of city for which weather should be fetched.
+            - city: name of city for which weather should be fetched.
 
         Removes message with command.
         Usable only in channels specified in environment configuration.
         """
-        await remove_command_message(context.message)
 
-        if len(args) == 0:
+        if not should_perform_command(interaction):
             return
 
-        if not should_perform_command(context):
-            return
-
-        city = ' '.join(args)
-        await weather_command(context, city)
+        await weather_command(interaction, city)

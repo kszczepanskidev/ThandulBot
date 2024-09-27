@@ -7,30 +7,26 @@ apis = {
     'dog': ('https://random.dog/woof.json', 'url'),
     'fox': ('https://randomfox.ca/floof/', 'image'),
     'duck': ('https://random-d.uk/api/v2/random', 'url'),
-    'goat': 'https://placegoat.com/300',
 }
 
 # Fetches URL of random photo of specified animal.
-async def post_animal_command(context, animal):
+async def post_animal_command(interaction, animal):
     if animal == 'goat':
-        await post_animal_photo(context, apis[animal])
+        await post_animal_photo(interaction, apis[animal])
     else:
         response = get(apis[animal][0]).json()
         photoURL = response[apis[animal][1]]
-        await post_animal_photo(context, photoURL)
+        await post_animal_photo(interaction, photoURL)
 
 # Fetches URL of random photo of random animal.
-async def post_random_animal_command(context):
+async def post_random_animal_command(interaction):
     animal = choice(list(apis.keys()))
-    if animal == 'goat':
-        await post_animal_photo(context, apis[animal])
-    else:
-        response = get(apis[animal][0]).json()
-        photoURL = response[apis[animal][1]]
-        await post_animal_photo(context, photoURL)
+    response = get(apis[animal][0]).json()
+    photoURL = response[apis[animal][1]]
+    await post_animal_photo(interaction, photoURL)
 
 # Posts embed with animal photo and mention of calling user.
-async def post_animal_photo(context, photoURL):
+async def post_animal_photo(interaction, photoURL):
     embed = Embed()
     embed.set_image(url=photoURL)
-    await context.send(f'<@{context.author.id}>', embed=embed)
+    await interaction.response.send_message(f'<@{interaction.user.id}>', embed=embed)

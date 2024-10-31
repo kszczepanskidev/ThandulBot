@@ -106,3 +106,6 @@ venv.bak/
 # youtube-dl
 *.webm
 *.save
+
+
+/storage

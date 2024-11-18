@@ -1,11 +1,12 @@
 from discord import app_commands, Interaction
+from discord.ext import commands
 from typing import Literal
 
 from ..command_handlers.animals_commands import post_animal_command, post_random_animal_command
 
 class AnimalRandomPhotos(app_commands.Group):
     """
-    Commands that postrandom photos of animals.
+    Commands that post random photos of animals.
     """
 
     @app_commands.command(name='photo')
@@ -20,7 +21,7 @@ class AnimalRandomPhotos(app_commands.Group):
         await post_animal_command(interaction, animal)
 
     @app_commands.command(name='animal')
-    async def fox(self, interaction: Interaction):
+    async def animal(self, interaction: Interaction):
         """
         Posts random photo of an random animal.
         """

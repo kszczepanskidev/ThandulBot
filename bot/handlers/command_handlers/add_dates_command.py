@@ -48,5 +48,7 @@ async def add_dates_command(interaction, dates, customMessage):
     dates_msg = await interaction.original_response()
 
     # Add reactions for voting.
-    for emote in date_emotes[:len(dates)] + u'\u274c':
+    msg_emotes = date_emotes[:len(dates)]
+    msg_emotes.append(u'\u274c')
+    for emote in msg_emotes:
         await dates_msg.add_reaction(emote)

@@ -1,4 +1,5 @@
 import logging
+from os import path
 from tinydb import TinyDB, where
 
 class DatesNotifyDatabase:
@@ -32,7 +33,8 @@ class DatesNotifyDatabase:
         def __str__(self):
             return str(self.to_json())
 
-    __dates_notify_log = TinyDB('storage/dates_notify_log.json')
+    __log_path = path.join(path.dirname(__file__), '..', 'storage', 'dates_notify_log.json')
+    __dates_notify_log = TinyDB(__log_path)
 
     def add_log(self, dates_notify_log: DatesNotifyLog):
         if self.get_log(dates_notify_log.message_id) is not None:
